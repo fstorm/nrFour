@@ -8,7 +8,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -87,7 +86,7 @@ public class ListActivity extends Activity {
                 for (Account a : accounts) {
                     if (a.getAccountName() == String.valueOf(adapterView.getItemAtPosition(i))) {
 
-                        Intent showAccount = new Intent(ListActivity.this, AccountDisplay.class);
+                        Intent showAccount = new Intent(ListActivity.this, AccountView.class);
                         showAccount.putExtra("selectedAccount", a);
                         startActivity(showAccount);
                     }

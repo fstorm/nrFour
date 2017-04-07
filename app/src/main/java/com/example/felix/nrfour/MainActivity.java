@@ -48,72 +48,75 @@ public class MainActivity extends AppCompatActivity {
 Thread thread = new Thread(new Runnable() {
     @Override
     public void run() {
-        try {
+        Util.connect();
+        Util.insertIntoUsers();
 
-            EditText et = (EditText) findViewById(R.id.usernameField);
-            try {
-                Class.forName("com.mysql.jdbc.Driver").newInstance();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            Connection myConn = null;
-            try {
-                myConn = DriverManager.getConnection(URL);
-                myStm = myConn.createStatement();
-                ResultSet usersResSet = myStm.executeQuery(getAllUserInfo);
-
-                while (usersResSet.next()) {
-                    users.add(new User(usersResSet.getString("username"), usersResSet.getString("password"),
-                            usersResSet.getString("salt"), usersResSet.getString("user_id")));
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            String username = ((EditText) findViewById(R.id.usernameField)).getText().toString();
-            if (users != null || users.isEmpty() || users.size() == 0) {
-                Toast.makeText(context, "No users in DB", Toast.LENGTH_SHORT);
-            }
-            else{
-            for (User u : users) { // if users is empty, this wount work...
-                if (u.getUsername().equals(username)) {
-                    String password = ((EditText) findViewById(R.id.passwordField)).getText().toString();
-                    String salt = u.getSalt();
-                    if (u.getPassword().equals(BCrypt.hashpw(password, salt))) {
-                        Intent intent = new Intent(context, ListActivity.class);
-
-                        // this sends username to the next intent.
-                        // you probs need to send the username through, so that you know who you are dealing
-                        // with.
-
-                        intent.putExtra(u.getUserID(), "userIDReference");
-                        intent.putExtra(password, "passwordReference");
-
-//                    try {
-//                        myConn.close();
-//                    } catch (SQLException e) {
-//                        e.printStackTrace();
+//        try {
+//
+//            EditText et = (EditText) findViewById(R.id.usernameField);
+//            try {
+//                Class.forName("com.mysql.jdbc.Driver").newInstance();
+//            } catch (InstantiationException e) {
+//                e.printStackTrace();
+//            } catch (IllegalAccessException e) {
+//                e.printStackTrace();
+//            } catch (ClassNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//
+//            Connection myConn = null;
+//            try {
+//                myConn = DriverManager.getConnection(URL);
+//                myStm = myConn.createStatement();
+//                ResultSet usersResSet = myStm.executeQuery(getAllUserInfo);
+//
+//                while (usersResSet.next()) {
+//                    users.add(new User(usersResSet.getString("username"), usersResSet.getString("password"),
+//                            usersResSet.getString("salt"), usersResSet.getString("user_id")));
+//                }
+//
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//
+//            String username = ((EditText) findViewById(R.id.usernameField)).getText().toString();
+//            if (users != null || users.isEmpty() || users.size() == 0) {
+//                Toast.makeText(context, "No users in DB", Toast.LENGTH_SHORT);
+//            }
+//            else{
+//            for (User u : users) { // if users is empty, this wount work...
+//                if (u.getUsername().equals(username)) {
+//                    String password = ((EditText) findViewById(R.id.passwordField)).getText().toString();
+//                    String salt = u.getSalt();
+//                    if (u.getPassword().equals(BCrypt.hashpw(password, salt))) {
+//                        Intent intent = new Intent(context, ListActivity.class);
+//
+//                        // this sends username to the next intent.
+//                        // you probs need to send the username through, so that you know who you are dealing
+//                        // with.
+//
+//                        intent.putExtra(u.getUserID(), "userIDReference");
+//                        intent.putExtra(password, "passwordReference");
+//
+////                    try {
+////                        myConn.close();
+////                    } catch (SQLException e) {
+////                        e.printStackTrace();
+////                    }
+//
+//                        startActivity(intent);
+//                    } else {
+//                        Toast.makeText(context, "Wrong password", Toast.LENGTH_SHORT).show();
 //                    }
-
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(context, "Wrong password", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-        }
-
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
+//                }
+//            }
+//
+//        }
+//
+//        }
+//        catch(Exception e){
+//            e.printStackTrace();
+//        }
     }
 });
 
@@ -182,86 +185,89 @@ Thread thread = new Thread(new Runnable() {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-
-                    System.out.println("Tester 1");
-        // first check whether the username allready exists
-        ArrayList<String> existingUsernames = new ArrayList<String>();
-        try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Tester 2");
-        Connection myConn = null;
-        try {
-            myConn = DriverManager.getConnection(URL2);
-            myStm = myConn.createStatement();
-            ResultSet usersResSet = myStm.executeQuery(getUserNames);
-
-            while (usersResSet.next()) {
-                existingUsernames.add(usersResSet.getString("username"));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("Tester 3");
-        boolean exists = false;
-        for(String s: existingUsernames) {
-            if(s.equals(((EditText) findViewById(R.id.usernameField)).getText().toString()) || ! (s == null)) {
-                Toast.makeText(context, "Username allready used", Toast.LENGTH_SHORT);
-                exists = true;
-            }
-        }
-
-        System.out.println("Tester 4");
-        if(!exists) {
-            // then check password strength
-
-            // if all this works, create a new profile using the username and password enterd
-            //          and sign in
-            insertNewUser = "INSERT INTO users (user_id, password, salt, email, username) VALUES (?,?,?,?,?)";
-            try {
-                Class.forName("com.mysql.jdbc.Driver").newInstance();
-                Connection newConn = DriverManager.getConnection(URL2);
-                System.out.println("Tester 4.1");
-                PreparedStatement prepStat = newConn.prepareCall(insertNewUser);
-                System.out.println("Tester 4.2");
-                String salt = BCrypt.gensalt();
-                System.out.println("Tester 5");
-                prepStat.setString(2, BCrypt.hashpw(((EditText) findViewById(R.id.passwordField)).getText().toString(),
-                        salt));
-                prepStat.setString(3, salt);
-                prepStat.setString(5, ((EditText) findViewById(R.id.usernameField)).getText().toString());
-                prepStat.execute();
-                System.out.println("Tester 6");
-//                myConn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-
-
-
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
+                Util.connect();
+                String[] toInsert = {"123","userName","passWord",null, "facebook"};
+                Util.insertIntoAccounts(toInsert);
+//                try {
+//
+//                    System.out.println("Tester 1");
+//        // first check whether the username allready exists
+//        ArrayList<String> existingUsernames = new ArrayList<String>();
+//        try {
+//            Class.forName("com.mysql.jdbc.Driver").newInstance();
+//        } catch (InstantiationException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//
+//        System.out.println("Tester 2");
+//        Connection myConn = null;
+//        try {
+//            myConn = DriverManager.getConnection(URL2);
+//            myStm = myConn.createStatement();
+//            ResultSet usersResSet = myStm.executeQuery(getUserNames);
+//
+//            while (usersResSet.next()) {
+//                existingUsernames.add(usersResSet.getString("username"));
+//            }
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        System.out.println("Tester 3");
+//        boolean exists = false;
+//        for(String s: existingUsernames) {
+//            if(s.equals(((EditText) findViewById(R.id.usernameField)).getText().toString()) || ! (s == null)) {
+//                Toast.makeText(context, "Username allready used", Toast.LENGTH_SHORT);
+//                exists = true;
+//            }
+//        }
+//
+//        System.out.println("Tester 4");
+//        if(!exists) {
+//            // then check password strength
+//
+//            // if all this works, create a new profile using the username and password enterd
+//            //          and sign in
+//            insertNewUser = "INSERT INTO users (user_id, password, salt, email, username) VALUES (?,?,?,?,?)";
+//            try {
+//                Class.forName("com.mysql.jdbc.Driver").newInstance();
+//                Connection newConn = DriverManager.getConnection(URL2);
+//                System.out.println("Tester 4.1");
+//                PreparedStatement prepStat = newConn.prepareCall(insertNewUser);
+//                System.out.println("Tester 4.2");
+//                String salt = BCrypt.gensalt();
+//                System.out.println("Tester 5");
+//                prepStat.setString(2, BCrypt.hashpw(((EditText) findViewById(R.id.passwordField)).getText().toString(),
+//                        salt));
+//                prepStat.setString(3, salt);
+//                prepStat.setString(5, ((EditText) findViewById(R.id.usernameField)).getText().toString());
+//                prepStat.execute();
+//                System.out.println("Tester 6");
+////                myConn.close();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            } catch (IllegalAccessException e) {
+//                e.printStackTrace();
+//            } catch (InstantiationException e) {
+//                e.printStackTrace();
+//            } catch (ClassNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//
+//        }
+//
+//
+//
+//
+//                }
+//                catch (Exception e) {
+//                    e.printStackTrace();
+//                }
             }
         });
         thread.start();

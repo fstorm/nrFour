@@ -16,7 +16,7 @@
             android:id="@+id/twAccountName"
             android:gravity="center"/>
 
-        <EditText
+        <TextView
             android:text="accname"
             android:id="@+id/nameView"
             android:layout_width="wrap_content"

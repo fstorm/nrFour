@@ -10,14 +10,23 @@ public class User {
     private String salt;
     private String hashedPassword;
     private String userID;
+    private String IV;
 
    // private Account accounts[] = ;
 
-    public User(String username, String password, String salt, String userID) {
+    public User(String username, String password, String salt, String userID, String IV) {
         this.username = username;
         this.salt = salt;
         this.hashedPassword = password;
         this.userID = userID;
+        this.IV = IV;
+    }
+
+    public User(String username, String password, String salt, String IV) {
+        this.username = username;
+        this.salt = salt;
+        this.hashedPassword = password;
+        this.IV = IV;
     }
 
     public String getUsername() {
@@ -45,4 +54,8 @@ public class User {
     public String getUserID() { return userID; }
 
     public void setUserID(String userID) { this.userID = userID; }
+
+    public String getIV() {return IV;}
+
+    public void setIV(String iv) {IV = iv;}
 }

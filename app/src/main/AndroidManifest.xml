@@ -20,7 +20,7 @@
             android:label="List"
             android:theme="@style/AppTheme" />
 
-        <activity android:name=".AccountDisplay"
+        <activity android:name=".AccountView"
             android:label="AccountDisplay"
             android:theme="@style/AppTheme"/>
     </application>

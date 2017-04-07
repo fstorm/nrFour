@@ -10,30 +10,23 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Created by Felix on 17/02/2017.
  */
 
-public class AccountDisplay extends Activity {
+public class AccountView extends Activity {
 
     private static Account account ;
+    private static AccountController controller;
     private String oldPassword;
 
-    private TextView nameField;
+    private TextView accountNameField;
     private TextView usernameField;
     private TextView passwordField;
     private TextView noteField;
     private TextView oldPasswordField;
 
-    private static String[] charsToUse = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
-            "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h",
-            "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y",
-            "z"};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +35,12 @@ public class AccountDisplay extends Activity {
 
         Intent prevIntent = getIntent();
         account = (Account) prevIntent.getSerializableExtra("selectedAccount");
+        controller = new AccountController(account, this);
+
         oldPassword = account.getPassword();
 
-        nameField = (EditText) findViewById(R.id.nameView);
-        nameField.setText(account.getAccountName());
+        accountNameField = (TextView) findViewById(R.id.nameView);
+        accountNameField.setText(account.getAccountName());
 
         usernameField = (EditText) findViewById(R.id.usernameView);
         usernameField.setText(account.getUsername());
@@ -62,11 +57,14 @@ public class AccountDisplay extends Activity {
     }
 
     public void copyText(View view) {
+        controller.copyTextPressed();
         String password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
         ClipboardManager cpMng = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData data = ClipData.newPlainText("Password", password);
         cpMng.setPrimaryClip(data);
     }
+
+
 
     public void copyOldText(View view) {
         String oldPassword = ((TextView) findViewById(R.id.twOldPasswordField)).getText().toString();
@@ -75,46 +73,52 @@ public class AccountDisplay extends Activity {
         cpMng.setPrimaryClip(data);
     }
 
-    public void createPassword(View view) {
-        boolean go = true;
-        String password = "";
-        while (go) {
-            password = this.createPass(10);
-            if(!checkPass(password)) {
-                password = "";
-            }
-            go = !checkPass(password);
-        }
+    public void saveChanges(View view) {
+        // re-save fields
+    }
 
+    public void setAccountName(String accountName) {
+        accountNameField.setText(accountName);
+    }
+
+    public String getAccountName() {
+        return accountNameField.getText().toString();
+    }
+
+    public void setUsernameField(String name) {
+        usernameField.setText(name);
+    }
+
+    public String getUsernameField() {
+        return usernameField.getText().toString(); // maybe new String(blabla);
+    }
+
+    public void setNewPasswordField(String password) {
         passwordField.setText(password);
     }
 
-    public static String createPass(int length) {
-        String toReturn = "";
-        Random rnd = new Random();
-        for(int i = 0; i<length; i++){
-            int toUse = rnd.nextInt(charsToUse.length);
-            toReturn += charsToUse[toUse];
-        }
-        return toReturn;
+    public String getNewPasswordField() {
+        return passwordField.getText().toString();
     }
 
-    public static boolean checkPass(String pass) {
-        boolean toReturn = false;
-        Pattern p = Pattern.compile("[A-Z]");
-        Pattern q = Pattern.compile("[a-z]");
-        Pattern r = Pattern.compile("[0-9]");
-        Matcher match = p.matcher(pass);
-        Matcher match2 = q.matcher(pass);
-        Matcher match3 = r.matcher(pass);
-
-        if (match.find() && match2.find() && match3.find()) {
-            toReturn = true;
-        }
-        return toReturn;
+    public void setNote(String note) {
+        noteField.setText(note);
     }
 
-    public void saveChanges(View view) {
-        // re-save fields
+    public String getNote() {
+        return noteField.getText().toString();
+    }
+
+    public void setCurrentPasswordField(String password) {
+        oldPasswordField.setText(password);
+        oldPassword = password;
+    }
+
+    public String getCurrentPassword() {
+        return oldPasswordField.getText().toString();
+    }
+
+    public Object getSystemService() {
+        return this.getSystemService();
     }
 }
