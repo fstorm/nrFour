@@ -32,35 +32,10 @@ public class ListActivity extends Activity {
 
         // this gets the intent needed to open this activity
         Intent prevIntent = getIntent();
-        String username = prevIntent.getExtras().getString("userIDReference");
-        String password = prevIntent.getExtras().getString("passwordReference");
-
-        userIDQuery = "SELECT user_id FROM users WHERE username = "+username;
+        String userId = prevIntent.getExtras().getString("userIDReference");
 
         accountQuery = "SELECT * FROM accounts WHERE user_id = "+"";
 
-        // connecting to db
-        try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        String url = "jdbc:mysql://localhost:3306/passwordmng?user=ryan&password=&autoReconnect=true&useSSL=false";
-
-        Connection myConn = null;
-        try {
-            myConn = DriverManager.getConnection(url);
-            Statement myStm = myConn.createStatement();
-            ResultSet myRs = myStm.executeQuery(accountQuery);
-
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
 
         // here, get all inforamtion from the database

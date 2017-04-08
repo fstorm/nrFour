@@ -25,12 +25,12 @@ public class MainActivity extends AppCompatActivity {
 
     private static ArrayList<User> users;
 
-    private final static String getAllUserInfo = "SELECT user_id, username, salt, password FROM users";
-    private static Statement myStm;
-    private final static String URL = "jdbc:mysql://localhost:3306/passwordmng?user=ryan&password=&autoReconnect=true&useSSL=false";
-    private final static String URL2 =" http://10.0.2.2:8080//passwordmng?user=ryan&password=&autoReconnect=true&useSSL=false";
-    private final static String getUserNames = "SELECT username FROM users";
-    private static String insertNewUser;
+//    private final static String getAllUserInfo = "SELECT user_id, username, salt, password FROM users";
+//    private static Statement myStm;
+//    private final static String URL = "jdbc:mysql://localhost:3306/passwordmng?user=ryan&password=&autoReconnect=true&useSSL=false";
+//    private final static String URL2 =" http://10.0.2.2:8080//passwordmng?user=ryan&password=&autoReconnect=true&useSSL=false";
+//    private final static String getUserNames = "SELECT username FROM users";
+//    private static String insertNewUser;
     private static Context context;
 
     @Override
@@ -49,7 +49,18 @@ Thread thread = new Thread(new Runnable() {
     @Override
     public void run() {
         Util.connect();
-        Util.insertIntoUsers();
+        String username = ((EditText) findViewById(R.id.usernameField)).getText().toString();
+        User userLoggingIn = null;
+        if (Util.validUsername(username)) {
+            userLoggingIn = Util.getUser(username);
+            String password = ((EditText) findViewById(R.id.passwordField)).getText().toString();
+            if (BCrypt.hashpw(password, userLoggingIn.getSalt()).equals(userLoggingIn.getPassword())) {
+                Intent intent = new Intent(context, ListActivity.class);
+                intent.putExtra("userIDReference", userLoggingIn.getUserID());
+
+            }
+        }
+
 
 //        try {
 //

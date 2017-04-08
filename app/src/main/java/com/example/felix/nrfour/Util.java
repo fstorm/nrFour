@@ -168,4 +168,20 @@ public class Util {
         }
         return true;
     }
+
+    public static User getUser(String username) {
+        String getUser = "SELECT * FROM users WHERE username = "+username;
+        Statement stm = null;
+        User toReturn = null;
+        try {
+            stm = conn.createStatement();
+            ResultSet resultSet = stm.executeQuery(getUser);
+            toReturn = new User(resultSet.getString("username"),resultSet.getString("password"),
+                    resultSet.getString("salt"), resultSet.getString("user_id"), resultSet.getString("IV"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return toReturn;
+    }
 }
