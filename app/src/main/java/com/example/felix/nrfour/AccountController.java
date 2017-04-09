@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -113,4 +114,22 @@ public class AccountController {
     }
 
 
+    public void copyOldTextPressed() {
+        String oldPassword = accountView.getCurrentPassword();
+        ClipboardManager cpMng = (ClipboardManager) accountView.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData data = ClipData.newPlainText("Password", oldPassword);
+        cpMng.setPrimaryClip(data);
+    }
+
+    public void onSaveChangesPressed() {
+        Account account = new Account(accountView.getAccountName(),
+                accountView.getUsernameField(),
+                accountView.getNewPasswordField(),
+                accountView.getNote());
+        Util.updateAccounts(account, accountView.getUsersUsername());
+    }
+
+    public void onDeleteAccountPressed() {
+        Util.deleteAccount(accountView.getAccountName(), accountView.getUsersUsername());
+    }
 }

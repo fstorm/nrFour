@@ -26,7 +26,7 @@ public class AccountView extends Activity {
     private TextView noteField;
     private TextView oldPasswordField;
 
-
+    private String usersUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,47 +34,53 @@ public class AccountView extends Activity {
         setContentView(R.layout.activity_accountoverview);
 
         Intent prevIntent = getIntent();
-        account = (Account) prevIntent.getSerializableExtra("selectedAccount");
-        controller = new AccountController(account, this);
+        if (prevIntent.getStringExtra("new").equals("false")) {
+            account = (Account) prevIntent.getSerializableExtra("selectedAccount");
+            controller = new AccountController(account, this);
 
-        oldPassword = account.getPassword();
+            oldPassword = account.getPassword();
 
-        accountNameField = (TextView) findViewById(R.id.nameView);
-        accountNameField.setText(account.getAccountName());
+            accountNameField = (TextView) findViewById(R.id.nameView);
+            accountNameField.setText(account.getAccountName());
 
-        usernameField = (EditText) findViewById(R.id.usernameView);
-        usernameField.setText(account.getUsername());
+            usernameField = (EditText) findViewById(R.id.usernameView);
+            usernameField.setText(account.getUsername());
 
-        passwordField = (EditText) findViewById(R.id.passwordView);
-        passwordField.setText(account.getPassword());
+            passwordField = (EditText) findViewById(R.id.passwordView);
+            passwordField.setText(account.getPassword());
 
-        noteField = (EditText) findViewById(R.id.noteView);
-        noteField.setText(account.getNote());
+            noteField = (EditText) findViewById(R.id.noteView);
+            noteField.setText(account.getNote());
 
-        oldPasswordField = (TextView) findViewById(R.id.twOldPasswordField);
-        oldPasswordField.setText(oldPassword);
+            oldPasswordField = (TextView) findViewById(R.id.twOldPasswordField);
+            oldPasswordField.setText(oldPassword);
 
+            usersUsername = prevIntent.getStringExtra("username");
+        } else {
+
+        }
     }
 
     public void copyText(View view) {
         controller.copyTextPressed();
-        String password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
-        ClipboardManager cpMng = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData data = ClipData.newPlainText("Password", password);
-        cpMng.setPrimaryClip(data);
+//        String password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
+//        ClipboardManager cpMng = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+//        ClipData data = ClipData.newPlainText("Password", password);
+//        cpMng.setPrimaryClip(data);
     }
 
 
 
     public void copyOldText(View view) {
-        String oldPassword = ((TextView) findViewById(R.id.twOldPasswordField)).getText().toString();
-        ClipboardManager cpMng = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData data = ClipData.newPlainText("Password", oldPassword);
-        cpMng.setPrimaryClip(data);
+        controller.copyOldTextPressed();
+//        String oldPassword = ((TextView) findViewById(R.id.twOldPasswordField)).getText().toString();
+//        ClipboardManager cpMng = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+//        ClipData data = ClipData.newPlainText("Password", oldPassword);
+//        cpMng.setPrimaryClip(data);
     }
 
     public void saveChanges(View view) {
-        // re-save fields
+        controller.onSaveChangesPressed();
     }
 
     public void setAccountName(String accountName) {
@@ -120,5 +126,13 @@ public class AccountView extends Activity {
 
     public Object getSystemService() {
         return this.getSystemService();
+    }
+
+    public String getUsersUsername() {
+        return usersUsername;
+    }
+
+    public void deleteAccount(View view) {
+        controller.onDeleteAccountPressed();
     }
 }

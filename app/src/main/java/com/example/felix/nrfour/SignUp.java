@@ -36,7 +36,8 @@ public class SignUp extends Activity {
         Util.insertIntoUsers(new User(username, passwordHashed, salt, IV));
 
         Intent intent = new Intent(this, ListActivity.class);
-        intent.putExtra("username", username);
+        intent.putExtra("userIDReference", username);
+        intent.putExtra("passwordReference", password);
         startActivity(intent);
     }
 

@@ -2,7 +2,9 @@ package com.example.felix.nrfour;
 import android.database.CursorJoiner;
 import android.text.Editable;
 
+import java.security.spec.ECField;
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  * Created by Felix on 03/04/2017.
@@ -100,19 +102,11 @@ public class Util {
     }
 
     public static void insertIntoUsers(User newUser) {
-
-
-
         PreparedStatement prepStm = null;
         String statment = "INSERT INTO users (password, salt, iv, username)" +
-                " VALUES ('somepassword', 'somesalt', 'someiv', 'someusername')";
+                " VALUES ('"+newUser.getPassword()+"', '"+newUser.getSalt()+"', '"+newUser.getIV()+
+                "', '"+newUser.getUsername()+"')";
         try {
-//            prepStm = conn.prepareCall(statment);
-//            prepStm.setString(2,"password");
-//            prepStm.setString(3, "somesalt");
-//            prepStm.setString(4, "someIV");
-//            prepStm.setString(5, "someusername");
-//            prepStm.execute();
             Statement stm = conn.createStatement();
             stm.executeUpdate(statment);
         } catch (Exception e) {
@@ -139,9 +133,9 @@ public class Util {
         return toReturn;
     }
 
-    public static boolean deleteAccount(Account account, String userid) {
+    public static boolean deleteAccount(String accountName, String userid) {
         String deleteStatment = "DELETE FROM accounts WHERE user_id = "+userid+
-                " AND account_name = "+account.getAccountName();
+                " AND account_name = "+accountName;
         Statement stm = null;
         try {
             stm = conn.createStatement();
@@ -183,5 +177,50 @@ public class Util {
         }
 
         return toReturn;
+    }
+
+    public static String getUserID (String username) {
+        String statment = "SELECT user_id FROM users WHERE username = "+username;
+        String userID = null;
+        try {
+            Statement stm = conn.createStatement();
+            ResultSet resultSet = stm.executeQuery(statment);
+
+            userID = resultSet.getString("user_id");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userID;
+    }
+
+    public static ArrayList<Account> getUserAccounts(String username, String key) {
+        ArrayList<Account> accountList = null;
+        String userID = getUserID(username);
+        String statement = "SELECT * FROM accounts WHERE user_id = "+userID;
+        User user = getUser(username);
+        String IV = user.getIV();
+        Account account = null;
+        try {
+            Statement stm = conn.createStatement();
+            ResultSet resultSet = stm.executeQuery(statement);
+            while (resultSet.next()) {
+                if (resultSet.getString("note").equals("")) {
+                    account = new Account(resultSet.getString("account_name"),
+                            Encrypter.decrypter(key, resultSet.getString("username"), IV),
+                            Encrypter.decrypter(key, resultSet.getString("password"), IV)
+                            );
+                } else {
+                    account = new Account(resultSet.getString("account_name"),
+                            Encrypter.decrypter(key, resultSet.getString("username"), IV),
+                            Encrypter.decrypter(key, resultSet.getString("password"), IV),
+                            Encrypter.decrypter(key, resultSet.getString("note"), IV)
+                    );
+                }
+                accountList.add(account);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return accountList;
     }
 }

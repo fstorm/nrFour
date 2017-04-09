@@ -14,6 +14,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 
 /**
@@ -22,8 +23,6 @@ import java.sql.Statement;
 
 public class ListActivity extends Activity {
 
-    private static String accountQuery;
-    private static String userIDQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,21 +31,15 @@ public class ListActivity extends Activity {
 
         // this gets the intent needed to open this activity
         Intent prevIntent = getIntent();
-        String userId = prevIntent.getExtras().getString("userIDReference");
+        String username = prevIntent.getExtras().getString("userIDReference");
+        String password = prevIntent.getExtras().getString("passwordReference");
 
-        accountQuery = "SELECT * FROM accounts WHERE user_id = "+"";
+        ArrayList<Account> accountList = Util.getUserAccounts(username, password);
 
-
-
-        // here, get all inforamtion from the database
-        final Account[] accounts = {new Account("", "A", "pizza"),
-                new Account("skype", "A", "qweasd879F0","this is a note!")};
-        String[] accountNames = new String[accounts.length];
+        String[] accountNames = new String[accountList.size()];
         for (int i = 0; i < accountNames.length; i++) {
-            accountNames[i] = accounts[i].getAccountName();
+            accountNames[i] = accountList.get(i).getAccountName();
         }
-
-//        String[] toUse = {"Example 1","Example 2","Example 3","Example 4","Example 5"};
 
         ListAdapter adapter = new ArrayAdapter<String>(this, R.layout.activity_account, R.id.textView1,
                 accountNames);
@@ -58,17 +51,22 @@ public class ListActivity extends Activity {
 
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
-                for (Account a : accounts) {
+                for (Account a : accountList) {
                     if (a.getAccountName() == String.valueOf(adapterView.getItemAtPosition(i))) {
 
                         Intent showAccount = new Intent(ListActivity.this, AccountView.class);
+                        showAccount.putExtra("new", "false");
                         showAccount.putExtra("selectedAccount", a);
+                        showAccount.putExtra("username", username);
                         startActivity(showAccount);
                     }
                 }
             }
         });
-
     }
 
+    public void createNewAccount(View view) {
+        Intent intent = new Intent(this, AccountView.class);
+        startActivity(intent);
+    }
 }

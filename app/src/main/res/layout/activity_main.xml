@@ -11,8 +11,23 @@
     android:orientation="vertical"
     tools:context="com.example.felix.nrfour.MainActivity">
 
-   <ListView
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:id="@+id/theListView"></ListView>
+   <LinearLayout
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:orientation="vertical">
+
+      <ListView
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:id="@+id/theListView"></ListView>
+
+      <Button
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:id="@+id/addAccountButton"
+          android:text="New Account"
+          android:onClick="createNewAccount"
+          />
+   </LinearLayout>
+
 </LinearLayout>
