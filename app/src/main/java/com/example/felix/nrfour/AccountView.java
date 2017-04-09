@@ -57,7 +57,7 @@ public class AccountView extends Activity {
 
             usersUsername = prevIntent.getStringExtra("username");
         } else {
-
+            // start a default page
         }
     }
 
