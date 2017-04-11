@@ -3,6 +3,7 @@ package com.example.felix.nrfour;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.TextView;
@@ -131,8 +132,15 @@ public class AccountController {
                 accountView.getUsernameField(),
                 accountView.getNewPasswordField(),
                 accountView.getNote());
+        updateValues(accountToAdd);
         new UpdateAccountTask().execute();
 
+    }
+
+    public void updateValues(Account acc) {
+        accountView.setUsernameField(acc.getUsername());
+        accountView.setNewPasswordField(acc.getPassword());
+        accountView.setNote(acc.getNote());
     }
 
     public void onDeleteAccountPressed() {
@@ -144,6 +152,11 @@ public class AccountController {
         protected Void doInBackground(Void... params) {
             Util.updateAccounts(accountToAdd, accountView.getUsersUsername(), accountView.getCurrentPassword(), key);
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
         }
     }
 

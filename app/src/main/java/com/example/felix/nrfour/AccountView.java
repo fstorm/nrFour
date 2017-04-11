@@ -34,6 +34,7 @@ public class AccountView extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accountoverview);
         Intent prevIntent = getIntent();
+
         key = prevIntent.getStringExtra("key");
         usersUsername = prevIntent.getStringExtra("username");
         if (prevIntent.getStringExtra("new").equals("false")) {
@@ -148,4 +149,12 @@ public class AccountView extends Activity {
     public void createPassword(View view) {
         controller.createPassword(view);
     }
+
+    @Override
+    public void onBackPressed() {
+        // do something on back.
+        Intent intent = new Intent(this, ListActivity.class);
+        return;
+    }
+
 }

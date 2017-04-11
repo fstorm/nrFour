@@ -33,7 +33,7 @@ public class Encrypter {
         String ciphertext = null;
         try {
             cipher = Cipher.getInstance(encryptionScheme);
-
+            System.out.println("IV: "+IV);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, new javax.crypto.spec.IvParameterSpec(hexToBytes(IV)));
             byte[] encrypted = cipher.doFinal(plaintext.getBytes("UTF-8"));
             ciphertext = bytesToHex(encrypted);

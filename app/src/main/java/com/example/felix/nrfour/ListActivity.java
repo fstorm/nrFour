@@ -38,42 +38,7 @@ public class ListActivity extends Activity {
         username = prevIntent.getExtras().getString("username");
         password = prevIntent.getExtras().getString("passwordReference");
 
-//        accountList = Util.getUserAccounts(username, password);
-
         new listTask().execute();
-//
-//        System.out.println("This is the accountList:"+accountList);
-//        if(!(accountList == null)) {
-//
-//
-//            String[] accountNames = new String[accountList.size()];
-//            for (int i = 0; i < accountNames.length; i++) {
-//                accountNames[i] = accountList.get(i).getAccountName();
-//            }
-//
-//            ListAdapter adapter = new ArrayAdapter<String>(this, R.layout.activity_account, R.id.textView1,
-//                    accountNames);
-//
-//            ListView theListView = (ListView) findViewById(R.id.theListView);
-//            theListView.setAdapter(adapter);
-//
-//            theListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//                @Override
-//                public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
-//                    for (Account a : accountList) {
-//                        if (a.getAccountName() == String.valueOf(adapterView.getItemAtPosition(i))) {
-//
-//                            Intent showAccount = new Intent(ListActivity.this, AccountView.class);
-//                            showAccount.putExtra("new", "false");
-//                            showAccount.putExtra("selectedAccount", a);
-//                            showAccount.putExtra("username", username);
-//                            startActivity(showAccount);
-//                        }
-//                    }
-//                }
-//            });
-//        }
     }
 
     public void doAfter() {
@@ -99,7 +64,6 @@ public class ListActivity extends Activity {
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long id) {
                     for (Account a : accountList) {
                         if (a.getAccountName() == String.valueOf(adapterView.getItemAtPosition(i))) {
-
                             Intent showAccount = new Intent(ListActivity.this, AccountView.class);
                             showAccount.putExtra("new", "false");
                             showAccount.putExtra("selectedAccount", a);
@@ -145,4 +109,5 @@ public class ListActivity extends Activity {
     private void updateAccountList(ArrayList<Account> newAccountList) {
         accountList = newAccountList;
     }
+
 }

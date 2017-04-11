@@ -42,7 +42,7 @@ public class SignUp extends Activity {
         new SignupTask().execute(newUser);
 
         Intent intent = new Intent(context, ListActivity.class);
-        intent.putExtra("userIDReference", username);
+        intent.putExtra("username", username);
         intent.putExtra("passwordReference", password);
         startActivity(intent);
 

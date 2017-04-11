@@ -118,6 +118,7 @@ public class Util {
         Statement stm = null;
         String userID = getUserID(username);
         String IV = Util.getUserIVFromID(userID);
+        System.out.println("UserID: "+userID+"\nUsername: "+username+"\nUserIV: "+IV+"\nThis is the key: "+key);
         String statment = "";
         if (oldPassword.equals("---")) {
             statment = "INSERT INTO accounts (account_name, user_id, username, password, note) " +
@@ -126,10 +127,11 @@ public class Util {
                     +"', '"+Encrypter.encrypter(key, account.getPassword(), IV)+"', '"+
                     Encrypter.encrypter(key, account.getNote(), IV)+"')";
         } else {
+            System.out.println("Updating...");
             statment = "UPDATE accounts SET username = '" + Encrypter.encrypter(key, account.getUsername(), IV) +
                     "', password = '" + Encrypter.encrypter(key, account.getPassword(), IV) +
                     "', note = '" + Encrypter.encrypter(key, account.getNote(), IV) +
-                    "' WHERE user_id = " + userID + " AND account_name = '" + account.getAccountName() + "'";
+                    "' WHERE user_id =" + userID + " AND account_name = '" + account.getAccountName() + "'";
         }
         try {
             Util.connect();
@@ -193,9 +195,9 @@ public class Util {
         return toReturn;
     }
 
-    public static boolean deleteAccount(String accountName, String userid) {
-
-        String deleteStatment = "DELETE FROM accounts WHERE user_id = "+userid+
+    public static boolean deleteAccount(String accountName, String username) {
+        String userID = getUserID(username);
+        String deleteStatment = "DELETE FROM accounts WHERE user_id = "+userID+
                 " AND account_name = '"+accountName+"'";
         Statement stm = null;
         try {
