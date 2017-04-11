@@ -16,7 +16,7 @@
             android:id="@+id/twAccountName"
             android:gravity="center"/>
 
-        <TextView
+        <EditText
             android:text="accname"
             android:id="@+id/nameView"
             android:layout_width="wrap_content"
@@ -40,7 +40,7 @@
             android:gravity="center" />
 
         <EditText
-            android:text="Username"
+            android:hint="Username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/usernameView"
@@ -63,7 +63,7 @@
             android:gravity="center"/>
 
         <EditText
-            android:text="Pass"
+            android:hint="Pass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/passwordView"
@@ -95,7 +95,7 @@
             android:gravity="center"/>
 
         <EditText
-            android:text="note"
+            android:hint="note"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/noteView"
@@ -121,7 +121,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/twOldPasswordField"
-            android:text="oldPass"
+            android:text="---"
             android:gravity="center"/>
 
     </LinearLayout>

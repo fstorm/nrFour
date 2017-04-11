@@ -27,20 +27,22 @@ public class AccountView extends Activity {
     private TextView oldPasswordField;
 
     private String usersUsername;
+    private String key;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accountoverview);
-
         Intent prevIntent = getIntent();
+        key = prevIntent.getStringExtra("key");
+        usersUsername = prevIntent.getStringExtra("username");
         if (prevIntent.getStringExtra("new").equals("false")) {
             account = (Account) prevIntent.getSerializableExtra("selectedAccount");
-            controller = new AccountController(account, this);
+            controller = new AccountController(account, this, key);
 
             oldPassword = account.getPassword();
 
-            accountNameField = (TextView) findViewById(R.id.nameView);
+            accountNameField = (EditText) findViewById(R.id.nameView);
             accountNameField.setText(account.getAccountName());
 
             usernameField = (EditText) findViewById(R.id.usernameView);
@@ -55,9 +57,16 @@ public class AccountView extends Activity {
             oldPasswordField = (TextView) findViewById(R.id.twOldPasswordField);
             oldPasswordField.setText(oldPassword);
 
-            usersUsername = prevIntent.getStringExtra("username");
         } else {
             // start a default page
+            account = new Account("default","","");
+            controller = new AccountController(account, this, key);
+
+            accountNameField = (EditText) findViewById(R.id.nameView);
+            usernameField = (EditText) findViewById(R.id.usernameView);
+            passwordField = (EditText) findViewById(R.id.passwordView);
+            noteField = (EditText) findViewById(R.id.noteView);
+            oldPasswordField = (TextView) findViewById(R.id.twOldPasswordField);
         }
     }
 
@@ -134,5 +143,9 @@ public class AccountView extends Activity {
 
     public void deleteAccount(View view) {
         controller.onDeleteAccountPressed();
+    }
+
+    public void createPassword(View view) {
+        controller.createPassword(view);
     }
 }

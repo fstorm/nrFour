@@ -1,5 +1,6 @@
 package com.example.felix.nrfour;
 
+import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -20,7 +21,12 @@ public class Encrypter {
     private final static String encryptionScheme = "Blowfish/CBC/PKCS5Padding";
 
     public static String encrypter (String key, String plaintext, String IV) {
-        byte[] KEY = key.getBytes();
+        byte[] KEY = new byte[0];
+        try {
+            KEY = key.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         SecretKeySpec keySpec = new SecretKeySpec(KEY, "Blowfish");
         Cipher cipher = null;
@@ -29,7 +35,7 @@ public class Encrypter {
             cipher = Cipher.getInstance(encryptionScheme);
 
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, new javax.crypto.spec.IvParameterSpec(hexToBytes(IV)));
-            byte[] encrypted = cipher.doFinal(plaintext.getBytes());
+            byte[] encrypted = cipher.doFinal(plaintext.getBytes("UTF-8"));
             ciphertext = bytesToHex(encrypted);
 
         } catch (NoSuchAlgorithmException e) {
@@ -44,13 +50,20 @@ public class Encrypter {
             e.printStackTrace();
         } catch (InvalidAlgorithmParameterException e) {
             e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
 
         return ciphertext;
     }
 
     public static String decrypter (String key, String ciphertext, String IV) {
-        byte[] KEY = key.getBytes();
+        byte[] KEY = new byte[0];
+        try {
+            KEY = key.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         String plainText = null;
         try {

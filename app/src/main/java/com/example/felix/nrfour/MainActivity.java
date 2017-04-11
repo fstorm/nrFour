@@ -2,28 +2,18 @@ package com.example.felix.nrfour;
 
 import android.content.Context;
 import android.content.Intent;
-import android.provider.Settings;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private static Context context;
+    private static String username;
+    private static String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,39 +24,84 @@ public class MainActivity extends AppCompatActivity {
 
     public void login(View view){
 
-//        new Login(this, ((EditText) findViewById(R.id.usernameField)).getText().toString(),
-//                ((EditText) findViewById(R.id.passwordField)).getText().toString()).execute(URL);
+        username = ((EditText) findViewById(R.id.usernameField)).getText().toString();
+        password = ((EditText) findViewById(R.id.passwordField)).getText().toString();
+        new LoginTask(this).execute(new String[]{"username", "password"});
 
-Thread thread = new Thread(new Runnable() {
-    @Override
-    public void run() {
-        Util.connect();
-        String username = ((EditText) findViewById(R.id.usernameField)).getText().toString();
-        User userLoggingIn = null;
-        if (Util.validUsername(username)) {
-            userLoggingIn = Util.getUser(username);
-            String password = ((EditText) findViewById(R.id.passwordField)).getText().toString();
-            if (BCrypt.hashpw(password, userLoggingIn.getSalt()).equals(userLoggingIn.getPassword())) {
-                Intent intent = new Intent(context, ListActivity.class);
-                intent.putExtra("userIDReference", userLoggingIn.getUserID());
-                startActivity(intent);
-            }
-        }
-    }
-});
 
-        thread.start();
+
+//    Thread thread = new Thread(new Runnable() {
+//        @Override
+//        public void run() {
+//            System.out.println("Starting");
+//            String username = ((EditText) findViewById(R.id.usernameField)).getText().toString();
+//            User userLoggingIn = null;
+//            if (!Util.unusedUsername(username)) {
+//                System.out.println("Username Valid");
+//               userLoggingIn = Util.getUser(username);
+//               String password = ((EditText) findViewById(R.id.passwordField)).getText().toString();
+//               if (BCrypt.hashpw(password, userLoggingIn.getSalt()).equals(userLoggingIn.getPassword())) {
+//                   System.out.println("Password Valid");
+//                   Intent intent = new Intent(context, ListActivity.class);
+//                   intent.putExtra("userIDReference", userLoggingIn.getUserID());
+//                   intent.putExtra("passwordReference", password);
+//                   startActivity(intent);
+//               }
+//            }
+//        }
+//    });
+//        thread.start();
     }
 
     public void signup(View view) {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                Util.connect();
                 Intent intent = new Intent(context, SignUp.class);
                 startActivity(intent);
             }
         });
         thread.start();
+    }
+
+
+    private class LoginTask extends AsyncTask<String, Void, Void> {
+        private Context context;
+        private User userLoggingIn;
+//        private String username;
+//        private String password;
+        private boolean cont = false;
+
+        public LoginTask(Context context) {
+            this.context = context;
+        }
+        @Override
+        protected Void doInBackground(String... userinfo) {
+            userLoggingIn = null;
+            if (!Util.unusedUsername(username)) {
+                userLoggingIn = Util.getUser(username);
+                cont = true;
+            } else {
+                System.out.println("MAINACT: Unknown username");
+                cont = false;
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+//            super.onPostExecute(aVoid);
+            if (cont == false) {
+                Toast.makeText(context, "The username is incorrect", Toast.LENGTH_SHORT).show();}
+            else if (BCrypt.hashpw(password, userLoggingIn.getSalt()).equals(userLoggingIn.getPassword())) {
+                System.out.println("Password Valid");
+                Intent intent = new Intent(context, ListActivity.class);
+                intent.putExtra("username", userLoggingIn.getUsername());
+                System.out.println("Sending"+userLoggingIn.getUserID());
+                intent.putExtra("passwordReference", password);
+                context.startActivity(intent);
+            }
+        }
     }
 }

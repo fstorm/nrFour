@@ -3,6 +3,7 @@ package com.example.felix.nrfour;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.view.View;
 import android.widget.TextView;
 
@@ -17,7 +18,10 @@ import java.util.regex.Pattern;
 public class AccountController {
 
     private static Account account;
+    private static Account accountToAdd;
     private static AccountView accountView;
+    private static String key;
+    private static String IV;
 
     private static String[] charsToUse = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q",
@@ -25,11 +29,11 @@ public class AccountController {
             "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y",
             "z"};
 
-    public AccountController(Account account, AccountView view) {
+    public AccountController(Account account, AccountView view, String key) {
         this.account = account;
         this.accountView = view;
-
-        accountView.setCurrentPasswordField(account.getPassword());
+        this.key = key;
+        System.out.println("THis is the key:"+key);
     }
 
 
@@ -122,14 +126,34 @@ public class AccountController {
     }
 
     public void onSaveChangesPressed() {
-        Account account = new Account(accountView.getAccountName(),
+        System.out.println("onSaveChangesPressed: "+accountView.getAccountName());
+        accountToAdd = new Account(accountView.getAccountName(),
                 accountView.getUsernameField(),
                 accountView.getNewPasswordField(),
                 accountView.getNote());
-        Util.updateAccounts(account, accountView.getUsersUsername());
+        new UpdateAccountTask().execute();
+
     }
 
     public void onDeleteAccountPressed() {
-        Util.deleteAccount(accountView.getAccountName(), accountView.getUsersUsername());
+        new DeleteAccountTask().execute();
     }
+
+    public class UpdateAccountTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            Util.updateAccounts(accountToAdd, accountView.getUsersUsername(), accountView.getCurrentPassword(), key);
+            return null;
+        }
+    }
+
+    public class DeleteAccountTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            Util.deleteAccount(accountView.getAccountName(), accountView.getUsersUsername());
+            return null;
+        }
+    }
+
 }
