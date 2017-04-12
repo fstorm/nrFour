@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by Felix on 17/02/2017.
@@ -102,7 +103,12 @@ public class AccountView extends Activity {
     }
 
     public void setUsernameField(String name) {
-        usernameField.setText(name);
+        if(Util.isValidate(name)) {
+            usernameField.setText(name);
+        } else {
+            Toast.makeText(this, "This contains invalid input", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     public String getUsernameField() {
@@ -110,15 +116,26 @@ public class AccountView extends Activity {
     }
 
     public void setNewPasswordField(String password) {
-        passwordField.setText(password);
+        if(Util.isValidate(password)) {
+            passwordField.setText(password);
+        } else {
+            Toast.makeText(this, "This contains invalid input", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public String getNewPasswordField() {
-        return passwordField.getText().toString();
+        System.out.println(passwordField.getText().toString());
+        String password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
+        System.out.println(password);
+        return password;
     }
 
     public void setNote(String note) {
-        noteField.setText(note);
+        if (Util.isValidate(note)) {
+            noteField.setText(note);
+        } else {
+            Toast.makeText(this, "This contains invalid input", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public String getNote() {
@@ -126,8 +143,16 @@ public class AccountView extends Activity {
     }
 
     public void setCurrentPasswordField(String password) {
-        oldPasswordField.setText(password);
-        oldPassword = password;
+        if(Util.isValidate(password)) {
+            oldPasswordField.setText(password);
+            oldPassword = password;
+        } else {
+            Toast.makeText(this, "This contains invalid input", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void invalidToast() {
+        Toast.makeText(this, "This contains invalid input", Toast.LENGTH_SHORT).show();
     }
 
     public String getCurrentPassword() {
@@ -152,8 +177,11 @@ public class AccountView extends Activity {
 
     @Override
     public void onBackPressed() {
-        // do something on back.
         Intent intent = new Intent(this, ListActivity.class);
+        intent.putExtra("username", usersUsername);
+        intent.putExtra("passwordReference", key);
+        startActivity(intent);
+        finish();
         return;
     }
 

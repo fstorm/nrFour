@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -112,7 +113,7 @@ public class AccountController {
     }
 
     public void copyTextPressed() {
-        String password = accountView.getCurrentPassword();
+        String password = accountView.getNewPasswordField();
         ClipboardManager cpMng = (ClipboardManager) accountView.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData data = ClipData.newPlainText("Password", password);
         cpMng.setPrimaryClip(data);
@@ -127,20 +128,30 @@ public class AccountController {
     }
 
     public void onSaveChangesPressed() {
-        System.out.println("onSaveChangesPressed: "+accountView.getAccountName());
-        accountToAdd = new Account(accountView.getAccountName(),
-                accountView.getUsernameField(),
-                accountView.getNewPasswordField(),
-                accountView.getNote());
-        updateValues(accountToAdd);
-        new UpdateAccountTask().execute();
+        if(Util.isValidate(accountView.getAccountName()) && Util.isValidate(accountView.getUsernameField())
+                && Util.isValidate(accountView.getNewPasswordField()) && Util.isValidate(accountView.getNote())) {
+            accountToAdd = new Account(accountView.getAccountName(),
+                    accountView.getUsernameField(),
+                    accountView.getNewPasswordField(),
+                    accountView.getNote());
+            updateValues(accountToAdd);
+            new UpdateAccountTask().execute();
+        } else {
+            accountView.invalidToast();
+        }
+
 
     }
 
     public void updateValues(Account acc) {
+        if(Util.isValidate(acc.getUsername()) && Util.isValidate(acc.getPassword())
+                && Util.isValidate(acc.getNote())) {
         accountView.setUsernameField(acc.getUsername());
         accountView.setNewPasswordField(acc.getPassword());
         accountView.setNote(acc.getNote());
+        } else {
+            accountView.invalidToast();
+        }
     }
 
     public void onDeleteAccountPressed() {
@@ -157,6 +168,7 @@ public class AccountController {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            accountView.setCurrentPasswordField(accountView.getNewPasswordField());
         }
     }
 

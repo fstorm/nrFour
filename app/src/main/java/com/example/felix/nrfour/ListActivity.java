@@ -70,6 +70,7 @@ public class ListActivity extends Activity {
                             showAccount.putExtra("username", username);
                             showAccount.putExtra("key", password);
                             startActivity(showAccount);
+                            finish();
                         }
                     }
                 }
@@ -84,6 +85,7 @@ public class ListActivity extends Activity {
         intent.putExtra("username", username);
         System.out.println("ListActivity: Sending "+username);
         startActivity(intent);
+        finish();
     }
 
     private class listTask extends AsyncTask<Void, Void, Void> {

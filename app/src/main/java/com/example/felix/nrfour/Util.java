@@ -177,8 +177,17 @@ public class Util {
     }
 
     // rejects " ' | ;
+
+    /**
+     * Returns true if the input is valid, and false if not.
+     * If the input is null or empty, it returns true, as this is permitted.
+     * @param input
+     * @return boolean true
+     */
     public static boolean isValidate(String input) {
         boolean toReturn = true;
+        if(input == null) {return true;}
+        if (input.equals("")) {return true;}
         for (int i = 0; i<input.length(); i++) {
             switch(input.charAt(i)) {
                 case '\"' : toReturn = false;

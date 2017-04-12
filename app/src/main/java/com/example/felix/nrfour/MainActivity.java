@@ -26,31 +26,11 @@ public class MainActivity extends AppCompatActivity {
 
         username = ((EditText) findViewById(R.id.usernameField)).getText().toString();
         password = ((EditText) findViewById(R.id.passwordField)).getText().toString();
-        new LoginTask(this).execute(new String[]{"username", "password"});
-
-
-
-//    Thread thread = new Thread(new Runnable() {
-//        @Override
-//        public void run() {
-//            System.out.println("Starting");
-//            String username = ((EditText) findViewById(R.id.usernameField)).getText().toString();
-//            User userLoggingIn = null;
-//            if (!Util.unusedUsername(username)) {
-//                System.out.println("Username Valid");
-//               userLoggingIn = Util.getUser(username);
-//               String password = ((EditText) findViewById(R.id.passwordField)).getText().toString();
-//               if (BCrypt.hashpw(password, userLoggingIn.getSalt()).equals(userLoggingIn.getPassword())) {
-//                   System.out.println("Password Valid");
-//                   Intent intent = new Intent(context, ListActivity.class);
-//                   intent.putExtra("userIDReference", userLoggingIn.getUserID());
-//                   intent.putExtra("passwordReference", password);
-//                   startActivity(intent);
-//               }
-//            }
-//        }
-//    });
-//        thread.start();
+        if (Util.isValidate(username) && Util.isValidate(password)) {
+            new LoginTask(this).execute(new String[]{"username", "password"});
+        } else {
+            Toast.makeText(this, "This contains invalid input", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void signup(View view) {
