@@ -12,7 +12,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /**
- * Created by Felix on 17/02/2017.
+ * The view associated with the account. This view is in charge of creating the controller when created.
+ * Allows the controller to communicate with the UI, and provides get and set methods in order to interact
+ * with UI data.
  */
 
 public class AccountView extends Activity {
@@ -30,6 +32,11 @@ public class AccountView extends Activity {
     private String usersUsername;
     private String key;
 
+    /**
+     * Either creates a default account, without information being filled in, or an account view populated with
+     * the users saved data.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,36 +79,50 @@ public class AccountView extends Activity {
         }
     }
 
+    /**
+     * Called when the user presses the copy password button.
+     * @param view
+     */
     public void copyText(View view) {
         controller.copyTextPressed();
-//        String password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
-//        ClipboardManager cpMng = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-//        ClipData data = ClipData.newPlainText("Password", password);
-//        cpMng.setPrimaryClip(data);
     }
 
-
-
+    /**
+     * Called when the user pressesd the copy old password button.
+     * @param view
+     */
     public void copyOldText(View view) {
         controller.copyOldTextPressed();
-//        String oldPassword = ((TextView) findViewById(R.id.twOldPasswordField)).getText().toString();
-//        ClipboardManager cpMng = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-//        ClipData data = ClipData.newPlainText("Password", oldPassword);
-//        cpMng.setPrimaryClip(data);
     }
 
+    /**
+     * Called when the user presses the save changes button.
+     * @param view
+     */
     public void saveChanges(View view) {
         controller.onSaveChangesPressed();
     }
 
+    /**
+     * Sets the account name of an account.
+     * @param accountName
+     */
     public void setAccountName(String accountName) {
         accountNameField.setText(accountName);
     }
 
+    /**
+     * Returns the account name.
+     * @return accountName
+     */
     public String getAccountName() {
         return accountNameField.getText().toString();
     }
 
+    /**
+     * Sets the value of the username Field.
+     * @param name
+     */
     public void setUsernameField(String name) {
         if(Util.isValidate(name)) {
             usernameField.setText(name);
@@ -111,10 +132,18 @@ public class AccountView extends Activity {
 
     }
 
+    /**
+     * Gets the value of the username field
+     * @return username
+     */
     public String getUsernameField() {
-        return usernameField.getText().toString(); // maybe new String(blabla);
+        return usernameField.getText().toString();
     }
 
+    /**
+     * Sets the value of the new password field.
+     * @param password
+     */
     public void setNewPasswordField(String password) {
         if(Util.isValidate(password)) {
             passwordField.setText(password);
@@ -123,13 +152,19 @@ public class AccountView extends Activity {
         }
     }
 
+    /**
+     * Returns the value of the new Password field.
+     * @return password
+     */
     public String getNewPasswordField() {
-        System.out.println(passwordField.getText().toString());
         String password = ((EditText) findViewById(R.id.passwordView)).getText().toString();
-        System.out.println(password);
         return password;
     }
 
+    /**
+     * Sets the value of the note.
+     * @param note
+     */
     public void setNote(String note) {
         if (Util.isValidate(note)) {
             noteField.setText(note);
@@ -138,10 +173,18 @@ public class AccountView extends Activity {
         }
     }
 
+    /**
+     * Returns the note.
+     * @return
+     */
     public String getNote() {
         return noteField.getText().toString();
     }
 
+    /**
+     * Sets the value of the current password field
+     * @param password
+     */
     public void setCurrentPasswordField(String password) {
         if(Util.isValidate(password)) {
             oldPasswordField.setText(password);
@@ -151,22 +194,41 @@ public class AccountView extends Activity {
         }
     }
 
+    /**
+     * Called in the event that input fails the validation step.
+     */
     public void invalidToast() {
         Toast.makeText(this, "This contains invalid input", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Returns the current password from the old password field.
+     * @return
+     */
     public String getCurrentPassword() {
         return oldPasswordField.getText().toString();
     }
 
+    /**
+     * Returns the system service
+     * @return Object
+     */
     public Object getSystemService() {
         return this.getSystemService();
     }
 
+    /**
+     * Returns the Users username
+     * @return
+     */
     public String getUsersUsername() {
         return usersUsername;
     }
 
+    /**
+     * Called when the delete account button is pressed.
+     * @param view
+     */
     public void deleteAccount(View view) {
         controller.onDeleteAccountPressed();
     }
@@ -175,6 +237,9 @@ public class AccountView extends Activity {
         controller.createPassword(view);
     }
 
+    /**
+     * Called when the back button is pressed. Ensures that the ListActivity maintains updated.
+     */
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, ListActivity.class);

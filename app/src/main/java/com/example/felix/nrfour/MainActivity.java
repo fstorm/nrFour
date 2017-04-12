@@ -9,6 +9,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+/**
+ * The main activity. Called on the start up of the application.
+ * Handles Login logic.
+ */
 public class MainActivity extends AppCompatActivity {
 
     private static Context context;
@@ -22,6 +26,10 @@ public class MainActivity extends AppCompatActivity {
         context = this;
     }
 
+    /**
+     * Called when the user chooses to login to the application using a username and password.
+     * @param view
+     */
     public void login(View view){
 
         username = ((EditText) findViewById(R.id.usernameField)).getText().toString();
@@ -33,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Called when the user chooses to sign up to the service.
+     * @param view
+     */
     public void signup(View view) {
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -44,14 +56,18 @@ public class MainActivity extends AppCompatActivity {
         thread.start();
     }
 
-
+    /**
+     * Task that handles all database calls made by the login protocol.
+     */
     private class LoginTask extends AsyncTask<String, Void, Void> {
         private Context context;
         private User userLoggingIn;
-//        private String username;
-//        private String password;
         private boolean cont = false;
 
+        /**
+         * Checks the validity of the username.
+         * @param context
+         */
         public LoginTask(Context context) {
             this.context = context;
         }
@@ -62,23 +78,23 @@ public class MainActivity extends AppCompatActivity {
                 userLoggingIn = Util.getUser(username);
                 cont = true;
             } else {
-                System.out.println("MAINACT: Unknown username");
                 cont = false;
             }
 
             return null;
         }
 
+        /**
+         * If the username is correct, this validates the user and then logs them into their account.
+         * @param aVoid
+         */
         @Override
         protected void onPostExecute(Void aVoid) {
-//            super.onPostExecute(aVoid);
             if (cont == false) {
                 Toast.makeText(context, "The username is incorrect", Toast.LENGTH_SHORT).show();}
             else if (BCrypt.hashpw(password, userLoggingIn.getSalt()).equals(userLoggingIn.getPassword())) {
-                System.out.println("Password Valid");
                 Intent intent = new Intent(context, ListActivity.class);
                 intent.putExtra("username", userLoggingIn.getUsername());
-                System.out.println("Sending"+userLoggingIn.getUserID());
                 intent.putExtra("passwordReference", password);
                 context.startActivity(intent);
             }

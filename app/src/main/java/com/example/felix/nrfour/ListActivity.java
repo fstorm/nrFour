@@ -4,23 +4,18 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 
 /**
- * Created by Felix on 31/01/2017.
+ * Activity that lists all the accounts that a user has, and allows for the creation of a new account.
+ * Called from either the MainActivity or the SignUp activity.
  */
 
 public class ListActivity extends Activity {
@@ -29,6 +24,10 @@ public class ListActivity extends Activity {
     private String username;
     private String password;
 
+    /**
+     * Retrieves all the information send by the previous intent.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,15 +37,17 @@ public class ListActivity extends Activity {
         username = prevIntent.getExtras().getString("username");
         password = prevIntent.getExtras().getString("passwordReference");
 
-        new listTask().execute();
+        new ListTask().execute();
     }
 
+    /**
+     * Called after the database operations have been called.
+     * Creates the list with available accounts.
+     * Starts a new activity when a account name is pressed, or if the user wants to create a new account.
+     * After that, it calls finish().
+     */
     public void doAfter() {
-        System.out.println("This is the list now"+accountList);
-
         if(!(accountList == null)) {
-
-
             String[] accountNames = new String[accountList.size()];
             for (int i = 0; i < accountNames.length; i++) {
                 accountNames[i] = accountList.get(i).getAccountName();
@@ -78,29 +79,42 @@ public class ListActivity extends Activity {
         }
     }
 
+    /**
+     * Called when the user want to create a new account.
+     * @param view
+     */
     public void createNewAccount(View view) {
         Intent intent = new Intent(this, AccountView.class);
         intent.putExtra("new", "true");
         intent.putExtra("key", password);
         intent.putExtra("username", username);
-        System.out.println("ListActivity: Sending "+username);
         startActivity(intent);
         finish();
     }
 
-    private class listTask extends AsyncTask<Void, Void, Void> {
+    /**
+     * Task in charge of handeling the database.
+     */
+    private class ListTask extends AsyncTask<Void, Void, Void> {
 
         private ArrayList<Account> accountList2 = new ArrayList<Account>();
 
+        /**
+         * Gets the accounts a user has from the database, and then updates the global accountlist.
+         * @param params
+         * @return null
+         */
         @Override
         protected Void doInBackground(Void... params) {
-            System.out.println("Getting account List now");
             accountList2 = Util.getUserAccounts(username, password);
-            System.out.println("accoutnLst2 is now updated.");
             updateAccountList(accountList2);
             return null;
         }
 
+        /**
+         * Called doAfter() after the accountlist has been updated.
+         * @param aVoid
+         */
         @Override
         protected void onPostExecute(Void aVoid) {
 //            super.onPostExecute(aVoid);
@@ -108,6 +122,10 @@ public class ListActivity extends Activity {
         }
     }
 
+    /**
+     * Updates the accountlist with a new accountlist.
+     * @param newAccountList
+     */
     private void updateAccountList(ArrayList<Account> newAccountList) {
         accountList = newAccountList;
     }

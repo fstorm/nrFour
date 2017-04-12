@@ -13,13 +13,21 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Created by Felix on 07/04/2017.
+ * This class is in charge of all encryption and decryption needed in this application,
+ * as well as relevent processes.
  */
 
 public class Encrypter {
 
     private final static String encryptionScheme = "Blowfish/CBC/PKCS5Padding";
 
+    /**
+     * Returns a string with is encrypted using the Blowfish/CBC/PKCS5Padding algorithm.
+     * @param key
+     * @param plaintext
+     * @param IV
+     * @return ciphertext
+     */
     public static String encrypter (String key, String plaintext, String IV) {
         byte[] KEY = new byte[0];
         try {
@@ -33,7 +41,6 @@ public class Encrypter {
         String ciphertext = null;
         try {
             cipher = Cipher.getInstance(encryptionScheme);
-            System.out.println("IV: "+IV);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, new javax.crypto.spec.IvParameterSpec(hexToBytes(IV)));
             byte[] encrypted = cipher.doFinal(plaintext.getBytes("UTF-8"));
             ciphertext = bytesToHex(encrypted);
@@ -57,6 +64,14 @@ public class Encrypter {
         return ciphertext;
     }
 
+    /**
+     * Decrypts the inserted ciphertext, and returns a plaintext String. Decryption is done using
+     * Blowfish/CBC/PKCS5Pattern
+     * @param key
+     * @param ciphertext
+     * @param IV
+     * @return plaintext
+     */
     public static String decrypter (String key, String ciphertext, String IV) {
         byte[] KEY = new byte[0];
         try {
@@ -90,6 +105,11 @@ public class Encrypter {
         return plainText;
     }
 
+    /**
+     * Generates a pseudorandom IV consisting of 8 bytes.
+     * Copied from aioobe's post from Dec 25 2010: http://stackoverflow.com/questions/4531799/generate-8-byte-number-in-java
+     * @return IV
+     */
     public static String generateIV() {
         SecureRandom sr = new SecureRandom();
         byte[] byteIV = new byte[8];
@@ -99,9 +119,10 @@ public class Encrypter {
     }
 
     /**
-     * Need to find the author
+     * Converts byte arrays to Hex Strings.
+     * Source: http://dexxtr.com/post/57145943236/blowfish-encrypt-and-decrypt-in-java-android
      * @param data
-     * @return
+     * @return str
      */
     public static String bytesToHex(byte[] data) {
         if (data == null) {
@@ -123,9 +144,11 @@ public class Encrypter {
     }
 
     /**
-     * Need to find the author
+     * Converts Hex Strings to byte arrays.
+     * Sournce: http://stackoverflow.com/questions/15948662/decrypting-in-java-with-blowfish,
+     * By Sanchit
      * @param str
-     * @return
+     * @return byte[] buffer
      */
     public static byte[] hexToBytes(String str) {
         if (str == null) {
@@ -140,7 +163,6 @@ public class Encrypter {
             }
             return buffer;
         }
-
     }
 
 }

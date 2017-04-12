@@ -8,33 +8,35 @@ import java.sql.*;
 import java.util.ArrayList;
 
 /**
- * Created by Felix on 03/04/2017.
+ * The Util class handles all database connections that the application uses, as well
+ * as validation of user input.
  */
 public class Util {
 
-//    private final static String URL2 = "jdbc:mysql://sql8.freesqldatabase.com:3306/" +
-//            "sql8168390?user=sql8168390&password=PAegYgIpFg&autoReconnect=true&useSSL=false";
     private final static String URL = "jdbc:mysql://188.166.152.51:3306/passwordmanager?autoReconnect=true&useSSL=false";
     private static Connection conn;
 
     private static final String username = "root";
     private static final String password = "isitsecret";
 
+    /**
+     * Checks the connection to the database.
+     * @throws Exception
+     */
     public static void checkConnection() throws Exception {
         Class.forName("com.mysql.jdbc.Driver").newInstance();
         conn = DriverManager.getConnection(URL);
         boolean reached = conn.isValid(10);
-        System.out.println(reached);
-
     }
 
 
+    /**
+     * Connects the user to the database.
+     */
     public static void connect(){
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             conn = DriverManager.getConnection(URL, username, password);
-//            boolean reached = conn.isValid(10);
-//            System.out.println(reached);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InstantiationException e) {
@@ -47,6 +49,9 @@ public class Util {
 
     }
 
+    /**
+     * Closes the connection to the database
+     */
     public static void closeConnection() {
         try {
             conn.close();
@@ -55,6 +60,10 @@ public class Util {
         }
     }
 
+    /**
+     * Drops a table from the database.
+     * @param tableName
+     */
     public static void dropTable(String tableName) {
         Statement stm = null;
         try {
@@ -100,7 +109,6 @@ public class Util {
             prepStm.setString(4,newAccount.getNote()); //note
             prepStm.setString(5, newAccount.getAccountName()); //accountname
             prepStm.execute();
-//            conn.close();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,7 +126,6 @@ public class Util {
         Statement stm = null;
         String userID = getUserID(username);
         String IV = Util.getUserIVFromID(userID);
-        System.out.println("UserID: "+userID+"\nUsername: "+username+"\nUserIV: "+IV+"\nThis is the key: "+key);
         String statment = "";
         if (oldPassword.equals("---")) {
             statment = "INSERT INTO accounts (account_name, user_id, username, password, note) " +
@@ -127,7 +134,6 @@ public class Util {
                     +"', '"+Encrypter.encrypter(key, account.getPassword(), IV)+"', '"+
                     Encrypter.encrypter(key, account.getNote(), IV)+"')";
         } else {
-            System.out.println("Updating...");
             statment = "UPDATE accounts SET username = '" + Encrypter.encrypter(key, account.getUsername(), IV) +
                     "', password = '" + Encrypter.encrypter(key, account.getPassword(), IV) +
                     "', note = '" + Encrypter.encrypter(key, account.getNote(), IV) +
@@ -137,13 +143,16 @@ public class Util {
             Util.connect();
             stm = conn.createStatement();
             stm.executeUpdate(statment);
-//            conn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
+    /**
+     * Returns the users IV based on the user ID.
+     * @param userid
+     * @return IV
+     */
     private static String getUserIVFromID(String userid) {
         String statment = "SELECT iv FROM users WHERE user_id="+userid;
         String IV = "";
@@ -160,6 +169,10 @@ public class Util {
         return IV;
     }
 
+    /**
+     * Inserts a user into the database.
+     * @param newUser
+     */
     public static void insertIntoUsers(User newUser) {
 
         PreparedStatement prepStm = null;
@@ -170,14 +183,12 @@ public class Util {
             Util.connect();
             Statement stm = conn.createStatement();
             stm.executeUpdate(statment);
-//            conn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     // rejects " ' | ;
-
     /**
      * Returns true if the input is valid, and false if not.
      * If the input is null or empty, it returns true, as this is permitted.
@@ -204,6 +215,12 @@ public class Util {
         return toReturn;
     }
 
+    /**
+     * Deletes an account from the accounts database based on the users username and accountname
+     * @param accountName
+     * @param username
+     * @return boolean
+     */
     public static boolean deleteAccount(String accountName, String username) {
         String userID = getUserID(username);
         String deleteStatment = "DELETE FROM accounts WHERE user_id = "+userID+
@@ -213,13 +230,18 @@ public class Util {
             Util.connect();
             stm = conn.createStatement();
             stm.executeUpdate(deleteStatment);
-//            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return true;
     }
 
+    /**
+     * Checks whether a username is currently in use or not.
+     * Returns true of it is unused.
+     * @param username
+     * @return boolean
+     */
     public static boolean unusedUsername(String username) {
 
         String getUsernames = "SELECT username FROM users";
@@ -228,14 +250,9 @@ public class Util {
             Statement stm = conn.createStatement();
             ResultSet results = stm.executeQuery(getUsernames);
             while(results.next()) {
-                System.out.println(results.getString("username"));
-//                if(results.equals(null)) {return true;}
                 if (results.getString("username").equals(username)) {
-//                    conn.close();
-                    System.out.println("Util.unusedUsername: Username in use");
                     return false;
                 }
-//                conn.close();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -243,6 +260,11 @@ public class Util {
         return true;
     }
 
+    /**
+     * Returns a user from the database.
+     * @param username
+     * @return user
+     */
     public static User getUser(String username) {
         String getUser = "SELECT * FROM users WHERE username = '"+username+"'";
         Statement stm = null;
@@ -254,16 +276,18 @@ public class Util {
             if (resultSet.next()) {
                 toReturn = new User(resultSet.getString("username"), resultSet.getString("password"),
                         resultSet.getString("salt"), resultSet.getInt("user_id") + "", resultSet.getString("iv"));
-                System.out.println("Util.getUser: Added a user.");
             }
-//            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-//        System.out.println("Util.getUser: Returning user: "+toReturn.getUsername());
         return toReturn;
     }
 
+    /**
+     * Returns a user from the database
+     * @param userID
+     * @return user
+     */
     public static User getUserFromID(String userID){
         String getUser = "SELECT * FROM users WHERE username = "+userID;
         Statement stm = null;
@@ -275,17 +299,19 @@ public class Util {
             if (resultSet.next()) {
                 toReturn = new User(resultSet.getString("username"), resultSet.getString("password"),
                         resultSet.getString("salt"), resultSet.getInt("user_id") + "", resultSet.getString("iv"));
-                System.out.println("Util.getUser: Added a user.");
             }
-//            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-//        System.out.println("Util.getUser: Returning user: "+toReturn.getUsername());
         return toReturn;
     }
 
 
+    /**
+     * Returns a userID
+     * @param username
+     * @return userID
+     */
     public static String getUserID (String username) {
 
         String statment = "SELECT user_id FROM users WHERE username = '"+username+"'";
@@ -297,13 +323,18 @@ public class Util {
             if (resultSet.next()) {
                 userID = resultSet.getString("user_id");
             }
-//            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return userID;
     }
 
+    /**
+     * Returns all accounts associated with a user in an ArrayList<Account>
+     * @param username
+     * @param key
+     * @return ArrayList<Account> listToReturn
+     */
     public static ArrayList<Account> getUserAccounts(String username, String key) {
         ArrayList<Account> listToReturn = new ArrayList<Account>();
         String userID = getUserID(username);
@@ -314,9 +345,6 @@ public class Util {
             Util.connect();
             Statement stm = conn.createStatement();
             ResultSet resultSet = stm.executeQuery(statement);
-            if (!resultSet.isBeforeFirst() ) {
-                System.out.println("No data");
-            }
             while (resultSet.next()) {
                 if (Encrypter.decrypter(key, resultSet.getString("note"), IV).equals("")) {
                     account = new Account(resultSet.getString("account_name"),
@@ -332,9 +360,7 @@ public class Util {
 
                 }
                 listToReturn.add(account);
-//                System.out.println("getUserAccounts: AccountList is"+accountList);
             }
-//            conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
