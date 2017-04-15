@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.security.SecureRandom;
+
 /**
  * Handles the sign up logic.
  */
@@ -43,7 +45,7 @@ public class SignUp extends Activity {
      */
     public void registerNewUser() {
         String username = ((EditText) findViewById(R.id.signupUsernameField)).getText().toString();
-        String salt = BCrypt.gensalt();
+        String salt = BCrypt.gensalt(10, new SecureRandom());
         String password = ((EditText) findViewById(R.id.signupPassword1Field)).getText().toString();
         String passwordHashed = BCrypt.hashpw(password, salt);
         String IV = Encrypter.generateIV();
